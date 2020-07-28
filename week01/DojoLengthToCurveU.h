@@ -4,14 +4,14 @@
 #include <maya/MTypeId.h>
 #include <maya/MPxNode.h>
 
-class BasicNode : public MPxNode
+class DojoLengthToCurveU : public MPxNode
 {
 public:
     // Static variables
     static MTypeId typeID;
-    static MObject inputVal;
+    static MObject inputLength;
     static MObject inputCurve;
-    static MObject outputVal;
+    static MObject outputU;
 
     // Static methods
     static void* creator();
@@ -20,6 +20,5 @@ public:
     // Methods
     virtual MStatus compute( const MPlug& plug, MDataBlock& data );
 };
-
 
 #endif //RIGGING_DOJO_MAYA_API_101_BASICNODE_H

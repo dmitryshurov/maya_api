@@ -1,23 +1,23 @@
-#include "BasicNode.h"
+#include "DojoLengthToCurveU.h"
 #include <maya/MFnPlugin.h>
 
 MStatus initializePlugin( MObject obj )
 {
     MStatus stat;
 
-    MFnPlugin plugin( obj, "Dmitry Shurov", "0.1", "any");
+    MFnPlugin plugin( obj, "Dmitry Shurov", "1.0", "any");
 
     stat = plugin.registerNode(
-            "BasicNode",
-            BasicNode::typeID,
-            BasicNode::creator,
-            BasicNode::initialize,
+            "dojoLengthToCurveU",
+            DojoLengthToCurveU::typeID,
+            DojoLengthToCurveU::creator,
+            DojoLengthToCurveU::initialize,
             MPxNode::kDependNode
             );
 
     if ( stat != MStatus::kSuccess )
     {
-        stat.perror( "Failed to register Rigging Dojo Maya API 101 BasicNode" );
+        stat.perror( "Failed to register Rigging Dojo Maya API 101 dojoLengthToCurveU" );
     }
 
     return stat;
@@ -26,7 +26,7 @@ MStatus initializePlugin( MObject obj )
 MStatus uninitializePlugin( MObject obj )
 {
     MFnPlugin plugin;
-    plugin.deregisterNode(BasicNode::typeID);
+    plugin.deregisterNode(DojoLengthToCurveU::typeID);
 
     return MStatus::kSuccess;
 }

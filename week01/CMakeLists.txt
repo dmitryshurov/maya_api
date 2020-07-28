@@ -6,8 +6,8 @@ set(PROJECT_NAME basicNode)
 
 set(SOURCE_FILES
         pluginMain.cpp
-        BasicNode.cpp
-        BasicNode.h)
+        DojoLengthToCurveU.cpp
+        DojoLengthToCurveU.h)
 
 set(LIBRARIES
         OpenMaya
