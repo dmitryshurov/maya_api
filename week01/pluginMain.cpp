@@ -1,4 +1,4 @@
-#include "basicNode.h"
+#include "BasicNode.h"
 #include <maya/MFnPlugin.h>
 
 MStatus initializePlugin( MObject obj )
@@ -8,16 +8,16 @@ MStatus initializePlugin( MObject obj )
     MFnPlugin plugin( obj, "Dmitry Shurov", "0.1", "any");
 
     stat = plugin.registerNode(
-            "basicNode",
-            basicNode::typeID,
-            basicNode::creator,
-            basicNode::initialize,
+            "BasicNode",
+            BasicNode::typeID,
+            BasicNode::creator,
+            BasicNode::initialize,
             MPxNode::kDependNode
             );
 
     if ( stat != MStatus::kSuccess )
     {
-        stat.perror( "Failed to register Rigging Dojo Maya API 101 basicNode" );
+        stat.perror( "Failed to register Rigging Dojo Maya API 101 BasicNode" );
     }
 
     return stat;
@@ -26,7 +26,8 @@ MStatus initializePlugin( MObject obj )
 MStatus uninitializePlugin( MObject obj )
 {
     MFnPlugin plugin;
-    plugin.deregisterNode(basicNode::typeID);
+    plugin.deregisterNode(BasicNode::typeID);
 
     return MStatus::kSuccess;
 }
+

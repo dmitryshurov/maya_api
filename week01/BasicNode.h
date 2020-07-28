@@ -4,7 +4,7 @@
 #include <maya/MTypeId.h>
 #include <maya/MPxNode.h>
 
-class basicNode : public MPxNode
+class BasicNode : public MPxNode
 {
 public:
     // Static variables
@@ -13,10 +13,12 @@ public:
     static MObject inputCurve;
     static MObject outputVal;
 
-    // Methods
-    virtual MStatus compute( const MPlug& plug, MDataBlock& data );
+    // Static methods
     static void* creator();
     static MStatus initialize();
+
+    // Methods
+    virtual MStatus compute( const MPlug& plug, MDataBlock& data );
 };
 
 
