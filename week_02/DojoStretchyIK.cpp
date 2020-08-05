@@ -163,6 +163,9 @@ MStatus DojoStretchyIK::compute(const MPlug &plug, MDataBlock &data)
         double stretchV = data.inputValue(stretch).asDouble();
         double slideV = data.inputValue(slide).asDouble();
 
+        upInitLengthV *= globalScaleV;
+        downInitLengthV *= globalScaleV;
+
         // Sum of bone init lengths
         double chainInitLength = upInitLengthV + downInitLengthV;
 
@@ -180,6 +183,11 @@ MStatus DojoStretchyIK::compute(const MPlug &plug, MDataBlock &data)
 
         double upScaleV = upInitLengthV;
         double downScaleV = downInitLengthV;
+
+        MGlobal::displayInfo(MString("upInitLengthV: ") + upInitLengthV);
+        MGlobal::displayInfo(MString("downInitLengthV: ") + downInitLengthV);
+        MGlobal::displayInfo(MString("chainInitLength: ") + chainInitLength);
+        MGlobal::displayInfo(MString("startToEndLength: ") + startToEndLength);
 
 
         // Apply stretch
@@ -233,10 +241,10 @@ MStatus DojoStretchyIK::compute(const MPlug &plug, MDataBlock &data)
         //
 
         // Set output values
-        data.outputValue(upScale).set(upScaleV);
+        data.outputValue(upScale).set(upScaleV / globalScaleV);
         data.outputValue(upScale).setClean();
 
-        data.outputValue(downScale).set(downScaleV);
+        data.outputValue(downScale).set(downScaleV / globalScaleV);
         data.outputValue(downScale).setClean();
     }
 
