@@ -182,21 +182,6 @@ MStatus DojoStretchyIK::compute(const MPlug &plug, MDataBlock &data)
         double downScaleV = downInitLengthV;
 
 
-        // Apply slide
-        if (slideV < 0.5)
-        {
-            upScaleV *= slideV / 0.5;
-            downScaleV = chainInitLength - upScaleV;
-        }
-
-        if (slideV > 0.5)
-        {
-            downScaleV *= (1 - slideV) / 0.5;
-            upScaleV = chainInitLength - downScaleV;
-        }
-        //
-
-
         // Apply stretch
         if (chainInitLength < startToEndLength)
         {
@@ -205,6 +190,39 @@ MStatus DojoStretchyIK::compute(const MPlug &plug, MDataBlock &data)
             // The simplest scaling
             upScaleV *= 1.0 + (scale - 1.0) * stretchV;
             downScaleV *= 1.0 + (scale - 1.0) * stretchV;
+        }
+        //
+
+        // Apply slide
+        if (chainInitLength > startToEndLength) {
+            if (slideV < 0.5) {
+                double slideScale = slideV / 0.5;
+                upScaleV *= slideScale;
+                double chainLen = chainInitLength + (startToEndLength - chainInitLength) * (1.0 - slideScale);
+                downScaleV = chainLen - upScaleV;
+            }
+
+            if (slideV > 0.5) {
+                double slideScale = (1 - slideV) / 0.5;
+                downScaleV *= slideScale;
+                double chainLen = chainInitLength + (startToEndLength - chainInitLength) * (1.0 - slideScale);
+                upScaleV = chainLen - downScaleV;
+            }
+        }
+        else {
+            if (slideV < 0.5) {
+                double slideScale = slideV / 0.5;
+                double chainLen = upScaleV + downScaleV;
+                upScaleV *= slideScale;
+                downScaleV = chainLen - upScaleV;
+            }
+
+            if (slideV > 0.5) {
+                double slideScale = (1 - slideV) / 0.5;
+                double chainLen = upScaleV + downScaleV;
+                downScaleV *= slideScale;
+                upScaleV = chainLen - downScaleV;
+            }
         }
         //
 
