@@ -186,7 +186,7 @@ MStatus DojoStretchyIK::compute(const MPlug &plug, MDataBlock &data)
         if (slideV < 0.5)
         {
             upScaleV *= slideV / 0.5;
-            downScaleV = chainInitLength - downScaleV;
+            downScaleV = chainInitLength - upScaleV;
         }
 
         if (slideV > 0.5)
