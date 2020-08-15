@@ -13,6 +13,12 @@
 #define MAYA_PARM(name)  // A dummy to organize parameters in the code
 #define AFFECTS(name)    // A dummy to organize parameter affects in the code
 
+#define MCheckError(STATUS, MESSAGE)                          \
+if (STATUS != MStatus::kSuccess) {                            \
+MGlobal::displayError(MESSAGE);                               \
+return status;                                                \
+}
+
 MTypeId DojoAimConstraint::typeID(0x5D2C3);
 
 MObject DojoAimConstraint::translateX;
@@ -21,6 +27,7 @@ MObject DojoAimConstraint::translateZ;
 MObject DojoAimConstraint::translate;
 MObject DojoAimConstraint::aimMatrix;
 MObject DojoAimConstraint::upMatrix;
+MObject DojoAimConstraint::parentInvMatrix;
 
 MObject DojoAimConstraint::rotateX;
 MObject DojoAimConstraint::rotateY;
@@ -84,6 +91,14 @@ MStatus DojoAimConstraint::initialize()
         addAttribute(upMatrix);
     }
 
+    MAYA_PARM(parentInvMatrix) {
+        parentInvMatrix = matFn.create("parentInvMatrix", "piv");
+        matFn.setKeyable(true);
+        matFn.setStorable(true);
+        matFn.setWritable(true);
+        addAttribute(parentInvMatrix);
+    }
+
     MAYA_PARM(rotateX) {
         rotateX = unitFn.create("rotateX", "rx", MFnUnitAttribute::kAngle);
         unitFn.setKeyable(false);
@@ -129,12 +144,24 @@ MStatus DojoAimConstraint::compute(const MPlug &plug, MDataBlock &data)
 {
     if (plug == rotate || plug == rotateX || plug == rotateY || plug == rotateZ)
     {
+        MStatus status;
+
         MMatrix aimMatV = data.inputValue(aimMatrix).asMatrix();
         MMatrix upMatV = data.inputValue(upMatrix).asMatrix();
+
+        MDataHandle parentInvMatVH = data.inputValue(parentInvMatrix, &status);
+        MCheckError(status, "Input parentInvMat not connected");
+
+        MMatrix parentInvMatV = parentInvMatVH.asMatrix();
         MVector translateV = data.inputValue(translate).asVector();
 
         MVector aimV = MTransformationMatrix(aimMatV).getTranslation(MSpace::kWorld);
         MVector upV = MTransformationMatrix(upMatV).getTranslation(MSpace::kWorld);
+        MVector parentInvV = MTransformationMatrix(parentInvMatV).getTranslation(MSpace::kWorld);
+
+        MGlobal::displayInfo(MString("parentInvV: ") + parentInvV[0] + ";" + parentInvV[1] + ";" + parentInvV[2]);
+
+        translateV -= parentInvV; // Compensate for the parent translation
 
         MVector xAxis = (aimV - translateV).normal();
         MVector yAxis = (upV - translateV).normal();
