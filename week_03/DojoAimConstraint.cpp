@@ -22,6 +22,11 @@ return status;                                                \
 
 #define MVEC_FROM_MMAT(NAME) MVector(NAME[3][0], NAME[3][1], NAME[3][2])
 
+enum UpTypes {
+    MATRIX,
+    VECTOR
+};
+
 MTypeId DojoAimConstraint::typeID(0x5D2C3);
 
 MObject DojoAimConstraint::translateX;
@@ -55,9 +60,9 @@ MStatus DojoAimConstraint::initialize()
     MFnEnumAttribute enumFn;
 
     MAYA_PARM(upType) {
-        upType = enumFn.create("upType", "uptp", 0);
-        enumFn.addField("Matrix", 0);
-        enumFn.addField("Vector", 1);
+        upType = enumFn.create("upType", "uptp", UpTypes::MATRIX);
+        enumFn.addField("Matrix", UpTypes::MATRIX);
+        enumFn.addField("Vector", UpTypes::VECTOR);
         enumFn.setKeyable(true);
         enumFn.setWritable(true);
         enumFn.setStorable(true);
@@ -213,15 +218,19 @@ MStatus DojoAimConstraint::compute(const MPlug &plug, MDataBlock &data)
 
         MDataHandle upMatrixVH = data.inputValue(upMatrix, &status);
 
-        if (upTypeV == 0)
+        if (upTypeV == UpTypes::MATRIX)
         {
             MMatrix upMatV = upMatrixVH.asMatrix();
             upV = MVEC_FROM_MMAT(upMatV);
             globalUp = false;
         }
-        else {
+        else if (upTypeV == UpTypes::VECTOR) {
             upV = data.inputValue(upVec).asVector();
             globalUp = true;
+        }
+        else {
+            MGlobal::displayError("Incorrect upType value");
+            return MStatus::kFailure;
         }
 
         MDataHandle parentInvMatVH = data.inputValue(parentInvMatrix, &status);
