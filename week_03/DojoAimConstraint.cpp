@@ -19,6 +19,8 @@ MGlobal::displayError(MESSAGE);                               \
 return status;                                                \
 }
 
+#define MVEC_FROM_MMAT(NAME) MVector(NAME[3][0], NAME[3][1], NAME[3][2])
+
 MTypeId DojoAimConstraint::typeID(0x5D2C3);
 
 MObject DojoAimConstraint::translateX;
@@ -135,6 +137,7 @@ MStatus DojoAimConstraint::initialize()
         attributeAffects(translate, rotate);
         attributeAffects(aimMatrix, rotate);
         attributeAffects(upMatrix, rotate);
+        attributeAffects(parentInvMatrix, rotate);
     }
 
     return MStatus();
@@ -151,31 +154,32 @@ MStatus DojoAimConstraint::compute(const MPlug &plug, MDataBlock &data)
 
         MDataHandle parentInvMatVH = data.inputValue(parentInvMatrix, &status);
         MCheckError(status, "Input parentInvMat not connected");
-
         MMatrix parentInvMatV = parentInvMatVH.asMatrix();
+
         MVector translateV = data.inputValue(translate).asVector();
 
-        MVector aimV = MTransformationMatrix(aimMatV).getTranslation(MSpace::kWorld);
-        MVector upV = MTransformationMatrix(upMatV).getTranslation(MSpace::kWorld);
-        MVector parentInvV = MTransformationMatrix(parentInvMatV).getTranslation(MSpace::kWorld);
-
-        MGlobal::displayInfo(MString("parentInvV: ") + parentInvV[0] + ";" + parentInvV[1] + ";" + parentInvV[2]);
+        MVector aimV = MVEC_FROM_MMAT(aimMatV);
+        MVector upV = MVEC_FROM_MMAT(upMatV);
+        MVector parentInvV = MVEC_FROM_MMAT(parentInvMatV);
 
         translateV -= parentInvV; // Compensate for the parent translation
 
         MVector xAxis = (aimV - translateV).normal();
         MVector yAxis = (upV - translateV).normal();
-        MVector zAxis = xAxis ^ yAxis;
-        yAxis = zAxis ^ xAxis;
+        MVector zAxis = (xAxis ^ yAxis).normal();
+        yAxis = (zAxis ^ xAxis).normal();
 
         double outArr[4][4] = {
                 {xAxis[0], xAxis[1], xAxis[2], 0},
                 {yAxis[0], yAxis[1], yAxis[2], 0},
                 {zAxis[0], zAxis[1], zAxis[2], 0},
-                {0, 0, 0, 0}
+                {translateV[0], translateV[1], translateV[2], 0}
         };
 
         MMatrix outMat(outArr);
+
+        outMat = outMat * parentInvMatV;
+
         MTransformationMatrix outXformMatrix(outMat);
         MEulerRotation outRot = outXformMatrix.eulerRotation();
 
