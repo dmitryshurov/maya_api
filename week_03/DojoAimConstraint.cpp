@@ -173,7 +173,7 @@ MStatus DojoAimConstraint::compute(const MPlug &plug, MDataBlock &data)
                 {xAxis[0], xAxis[1], xAxis[2], 0},
                 {yAxis[0], yAxis[1], yAxis[2], 0},
                 {zAxis[0], zAxis[1], zAxis[2], 0},
-                {translateV[0], translateV[1], translateV[2], 0}
+                {translateV[0], translateV[1], translateV[2], 1}
         };
 
         MMatrix outMat(outArr);
