@@ -18,6 +18,7 @@ public:
     static MObject aimMatrix;
     static MObject upMatrix;
     static MObject parentInvMatrix;
+    static MObject parentMatrix;
 
     // Node outputs
     static MObject rotateX;

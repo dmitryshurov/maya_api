@@ -160,9 +160,9 @@ MStatus DojoAimConstraint::compute(const MPlug &plug, MDataBlock &data)
 
         MVector aimV = MVEC_FROM_MMAT(aimMatV);
         MVector upV = MVEC_FROM_MMAT(upMatV);
-        MVector parentInvV = MVEC_FROM_MMAT(parentInvMatV);
+        MVector parentInvV = MVEC_FROM_MMAT(parentInvMatV.inverse());
 
-        translateV -= parentInvV; // Compensate for the parent translation
+        translateV += parentInvV; // Compensate for the parent translation
 
         MVector xAxis = (aimV - translateV).normal();
         MVector yAxis = (upV - translateV).normal();
