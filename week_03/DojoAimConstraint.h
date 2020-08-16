@@ -15,10 +15,15 @@ public:
     static MObject translateY;
     static MObject translateZ;
     static MObject translate;
+    static MObject upX;
+    static MObject upY;
+    static MObject upZ;
+    static MObject upVec;
     static MObject aimMatrix;
     static MObject upMatrix;
     static MObject parentInvMatrix;
-    static MObject parentMatrix;
+    static MObject upType;
+
 
     // Node outputs
     static MObject rotateX;
